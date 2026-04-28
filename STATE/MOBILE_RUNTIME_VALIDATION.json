@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-27T08:03:28.025Z",
+  "generatedAt": "2026-04-27T19:15:24.347Z",
   "checks": [
     {
       "name": "meta_topics_exists",
@@ -22,6 +22,21 @@
       "details": "mobile-app.html loaded"
     },
     {
+      "name": "print_js_exists",
+      "ok": true,
+      "details": "preview/print.js loaded"
+    },
+    {
+      "name": "mobile_install_html_exists",
+      "ok": true,
+      "details": "mobile-app-install.html loaded"
+    },
+    {
+      "name": "mobile_install_js_exists",
+      "ok": true,
+      "details": "mobile-app-install.js loaded"
+    },
+    {
       "name": "mobile_app_uses_canonical_meta_topics",
       "ok": true,
       "details": "mobile-app.js fetches ./meta/topics.json"
@@ -37,14 +52,69 @@
       "details": "mobile-app.html loads mobile-app.js"
     },
     {
+      "name": "mobile_reader_uses_current_origin_pages",
+      "ok": true,
+      "details": "mobile-app.js resolves worksheet pages against the current origin"
+    },
+    {
+      "name": "mobile_print_handoff_uses_print_center",
+      "ok": true,
+      "details": "mobile-app.js deep-links into preview/print.html for preview-before-print"
+    },
+    {
+      "name": "mobile_print_handoff_marks_source_and_topic",
+      "ok": true,
+      "details": "mobile-app.js annotates print handoff with source and topic"
+    },
+    {
+      "name": "mobile_book_navigation_present",
+      "ok": true,
+      "details": "mobile-app.js includes global book navigation helper"
+    },
+    {
+      "name": "mobile_reader_notice_present",
+      "ok": true,
+      "details": "mobile reader exposes notice feedback for reading mode/navigation"
+    },
+    {
+      "name": "mobile_reader_mode_toggle_present",
+      "ok": true,
+      "details": "mobile reader exposes explicit full-page and enlarged reading modes"
+    },
+    {
+      "name": "mobile_reader_stage_prevents_right_edge_clipping",
+      "ok": true,
+      "details": "mobile reader uses a dedicated stage/canvas wrapper to avoid right-edge clipping"
+    },
+    {
+      "name": "print_center_accepts_url_selection",
+      "ok": true,
+      "details": "preview/print.js supports URL-driven page selection"
+    },
+    {
+      "name": "print_center_explains_mobile_handoff",
+      "ok": true,
+      "details": "preview/print.js explains mobile preview-before-print handoff"
+    },
+    {
+      "name": "mobile_install_flow_wired",
+      "ok": true,
+      "details": "mobile install page loads manifest and install handler"
+    },
+    {
+      "name": "mobile_install_supports_standalone_feedback",
+      "ok": true,
+      "details": "mobile install flow reports standalone/appinstalled state"
+    },
+    {
       "name": "mobile_topics_divergence_detected",
       "ok": true,
       "details": "meta/topics.json totalPages=95; mobile-topics.json totalPages=95"
     },
     {
       "name": "topic_name_sets_match",
-      "ok": false,
-      "details": "missingInMobile=1; missingInMeta=0"
+      "ok": true,
+      "details": "missingInMobile=0; missingInMeta=0"
     },
     {
       "name": "compat_phone_runtime_still_exists",

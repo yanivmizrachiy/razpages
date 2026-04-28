@@ -1,6 +1,6 @@
 # LIVE_STATUS — parabula-next
 
-_Last updated: 2026-04-26_
+_Last updated: 2026-04-27_
 
 ## Purpose
 This file is a short, non-historical snapshot of the **live canonical state** of the repository.
@@ -39,6 +39,15 @@ This file does **not** replace `PROJECT_RULES.md`.
 - The mobile reader remains **iframe-based by design**.
 - Root A4 worksheet pages remain the single source of truth for worksheet content.
 - Mobile rendering fixes must happen in the mobile reader layer, not by duplicating or forking worksheet pages.
+- Mobile prev/next now follows the global book order, while topic entry still opens from the first page of the chosen topic.
+- Mobile PDF now hands off into `preview/print.html` for preview-before-print instead of jumping straight to a raw worksheet page.
+- The mobile reader now resolves worksheet pages on the current repository origin, so local preview and the published site use the same reader logic safely.
+- Real-device phone validation found that width-first enlargement improved readability but still left right-edge worksheet content too fragile/clipped for approval.
+- The mobile reader now exposes explicit `עמוד מלא` / `קריאה מוגדלת` modes, with a dedicated anti-clipping stage/canvas wrapper inside the iframe.
+- In `עמוד מלא`, the reader keeps the entire A4 width visible without unexpected right-edge clipping.
+- In `קריאה מוגדלת`, the reader intentionally allows internal pan/scroll and explains that behavior to the user instead of silently hiding right-side content.
+- `mobile-app-install.html` is now top-aligned and no longer leaves a giant empty gray field below the main install card.
+- The topic chip strip was tightened for real-phone usability instead of staying as a crowded wrap-constrained row.
 - `preview/phone.*` is compatibility / legacy-adjacent, not the canonical mobile runtime.
 
 ---
@@ -49,10 +58,18 @@ This file does **not** replace `PROJECT_RULES.md`.
 - `preview/README.md`
 - `preview/APP_CONTRACT.md`
 - `meta/system-state.json`
-- `mobile-topics.json`
 - `storage/system-state.json`
 
 These files are live and useful, but may still require wording and structural alignment with the canonical snapshot above.
+
+---
+
+## Recently aligned / verified
+- `mobile-topics.json` was realigned to `meta/topics.json` so distinct topics remain distinct.
+- `scripts/app-layer-check.mjs` now reflects the current canonical-vs-compat mobile architecture.
+- `scripts/validate-mobile-runtime.mjs` now checks preview-before-print handoff, book-order navigation, and URL-driven print selection.
+- The stray empty gitlink `_stray_parabula_next_20260415_120247` was removed because it was breaking checkout/deployment workflows.
+- Live second-pass checks confirmed cross-topic next/previous behavior, explicit print handoff context, and improved install-page layout.
 
 ---
 

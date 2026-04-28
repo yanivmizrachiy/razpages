@@ -5,12 +5,16 @@ const BASE = (() => {
 
 const PAGE_BASE = new URL('../', BASE).href;
 const STORE_KEY = 'parabula-selection-v1';
+// Allow the preview iframe to render before opening the browser print dialog.
+const PRINT_DIALOG_DELAY = 250;
+const urlState = new URL(window.location.href);
 
 const searchBox = document.getElementById('searchBox');
 const topicFilter = document.getElementById('topicFilter');
 const selectionList = document.getElementById('selectionList');
 const printView = document.getElementById('printView');
 const selectionSummary = document.getElementById('selectionSummary');
+const handoffNote = document.getElementById('handoffNote');
 const restoreSelectionBtn = document.getElementById('restoreSelectionBtn');
 const selectVisibleBtn = document.getElementById('selectVisibleBtn');
 const clearBtn = document.getElementById('clearBtn');
@@ -27,6 +31,17 @@ function normalize(value) {
 
 function pageUrl(file) {
   return new URL(file, PAGE_BASE).href;
+}
+function deduplicateFiles(list) {
+  return [...new Set(list.filter(Boolean))];
+}
+function requestedFilesFromUrl() {
+  const direct = urlState.searchParams.getAll('file');
+  const csv = (urlState.searchParams.get('files') || '')
+    .split(',')
+    .map((file) => file.trim())
+    .filter(Boolean);
+  return deduplicateFiles([...direct, ...csv]);
 }
 
 function allPages() {
@@ -55,6 +70,24 @@ function updateSummary() {
   selectionSummary.textContent = count
     ? `נבחרו ${count} דפים`
     : 'עדיין לא נבחרו דפים';
+}
+function updateHandoffNote() {
+  const source = urlState.searchParams.get('source');
+  const autopreview = urlState.searchParams.get('autopreview') === '1';
+  const fromMobile = source === 'mobile-app';
+  const topic = urlState.searchParams.get('topic');
+  if (!handoffNote) return;
+  if (!fromMobile && !autopreview) {
+    handoffNote.hidden = true;
+    handoffNote.textContent = '';
+    return;
+  }
+  const bits = [];
+  if (fromMobile) bits.push('נפתח מהמובייל');
+  if (topic) bits.push(`נושא: ${topic}`);
+  if (autopreview) bits.push('זהו שלב preview-before-print לפני PDF/הדפסה');
+  handoffNote.hidden = false;
+  handoffNote.textContent = bits.join(' · ');
 }
 
 function renderList() {
@@ -92,6 +125,7 @@ function renderList() {
   });
 
   updateSummary();
+  updateHandoffNote();
 }
 
 function renderPreview() {
@@ -107,6 +141,22 @@ function renderPreview() {
     });
 
   updateSummary();
+  updateHandoffNote();
+}
+function applyUrlSelection() {
+  const requestedTopic = urlState.searchParams.get('topic');
+  if (requestedTopic && db.topics.some((topic) => topic.name === requestedTopic)) {
+    topicFilter.value = requestedTopic;
+  }
+
+  const validFiles = new Set(allPages().map((page) => page.file));
+  const requestedFiles = requestedFilesFromUrl().filter((file) => validFiles.has(file));
+  if (!requestedFiles.length) return false;
+
+  selected.clear();
+  requestedFiles.forEach((file) => selected.add(file));
+  saveSelection();
+  return true;
 }
 
 async function boot() {
@@ -121,7 +171,14 @@ async function boot() {
   });
 
   restoreSelection();
+  const selectedFromUrl = applyUrlSelection();
   renderList();
+  if (selectedFromUrl || urlState.searchParams.get('autopreview') === '1') {
+    renderPreview();
+  }
+  if (selectedFromUrl && urlState.searchParams.get('autoprint') === '1') {
+    setTimeout(() => window.print(), PRINT_DIALOG_DELAY);
+  }
 }
 
 searchBox.addEventListener('input', renderList);
@@ -148,7 +205,7 @@ openSelectedBtn.addEventListener('click', () => {
 
 printNowBtn.addEventListener('click', () => {
   renderPreview();
-  setTimeout(() => window.print(), 250);
+  setTimeout(() => window.print(), PRINT_DIALOG_DELAY);
 });
 
 boot().catch((error) => {

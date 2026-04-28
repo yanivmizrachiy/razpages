@@ -26,6 +26,11 @@
 - `preview/phone.*` נשאר שכבת compat / legacy-adjacent ולא שכבת המימוש הראשית.
 - מנוע הקריאה הקנוני במובייל נשאר iframe-based.
 - `meta/topics.json` הוא עמוד שדרה פעיל של מטא־דאטה לדפים.
+- `mobile-topics.json` הוא metadata תומך בלבד וחייב להישאר מיושר ל-`meta/topics.json`.
+- preview-before-print עובר דרך `preview/print.html`, כולל handoff ממוקד מ-`mobile-app.html`.
+- ולידציה אמיתית על טלפון הראתה ש-width-first לבד שיפר קריאות אבל עדיין לא הספיק כאשר צד ימין של דף A4 הרגיש clipped מדי.
+- הקריאה במובייל עובדת כעת עם שני מצבים מפורשים: `עמוד מלא` בלי חיתוך צד, ו-`קריאה מוגדלת` עם pan/scroll פנימי מוסבר בתוך הקורא.
+- `mobile-app-install.html` הוא מסלול התקנה קנוני למובייל וצריך להישאר שימושי ומיושר לראש המסך, בלי empty gray area גדול.
 - `PROJECT_RULES.md` ו-`LIVE_STATUS.md` הם ההכרעה הקנונית כאשר יש סתירה מול חומר ישן.
 
 ## עיקרון עבודה

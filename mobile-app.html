@@ -7,7 +7,7 @@
   <title>ספר דפי העבודה של יניב</title>
   <link rel="manifest" href="./mobile-app.webmanifest?v=20260417013000" />
   <link rel="icon" href="./icon.svg?v=20260417013000" type="image/svg+xml" />
-  <link rel="stylesheet" href="./mobile-app.css?v=20260417013000" />
+  <link rel="stylesheet" href="./mobile-app.css?v=20260427191000" />
 </head>
 <body class="focus-reading">
   <div class="app-shell">
@@ -17,6 +17,7 @@
         <div id="appMeta" class="app-meta">טוען…</div>
       </div>
       <div class="topbar-actions">
+        <button id="openInstallBtn" type="button">התקנה</button>
         <button id="toggleTopicsBtn" type="button">נושאים ודפים</button>
       </div>
     </header>
@@ -41,6 +42,13 @@
       </div>
 
       <div id="mobileLoadingState" class="loading-state" hidden>טוען דף…</div>
+      <div id="readerNotice" class="reader-notice" hidden></div>
+      <div class="reader-tools">
+        <div class="reader-mode-toggle" role="group" aria-label="מצב קריאה">
+          <button id="readerModeFullBtn" type="button">עמוד מלא</button>
+          <button id="readerModeZoomBtn" type="button">קריאה מוגדלת</button>
+        </div>
+      </div>
 
       <div class="frame-wrap">
         <iframe id="mobilePageFrame" title="ספר דפי עבודה" src="about:blank" loading="eager"></iframe>
@@ -51,9 +59,9 @@
       <button id="prevPageBtn" type="button">הקודם</button>
       <button id="nextPageBtn" type="button">הבא</button>
       <button id="openLiveBtn" type="button">פתח מלא</button>
-      <button id="printBtn" type="button">PDF</button>
+      <button id="printBtn" type="button">תצוגת PDF</button>
     </nav>
   </div>
-  <script src="./mobile-app.js?v=20260417013000"></script>
+  <script src="./mobile-app.js?v=20260427191000"></script>
 </body>
 </html>
