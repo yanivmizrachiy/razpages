@@ -7,7 +7,6 @@ permissions:
   contents: write
 jobs:
   apply:
-    if: ${{ !contains(github.event.head_commit.message, '[summary5-followup-applied]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +21,8 @@ jobs:
           import re
           p = Path('summary-5.html')
           s = p.read_text(encoding='utf-8')
-
-          # Section classes and wording.
+          if 'Summary 5 follow-up: connected A4 flow' in s:
+              raise SystemExit(0)
           s = s.replace('<section class="sheet page" aria-label="מה צפוי">', '<section class="sheet page upcoming-page" aria-label="מה צפוי">', 1)
           s = s.replace('<section class="sheet page" aria-label="מצפן">', '<section class="sheet page compass-page" aria-label="מצפן">', 1)
           s = s.replace('<section class="sheet page" aria-label="מה אנחנו מלמדים">', '<section class="sheet page teaching-page" aria-label="מה אנחנו מלמדים">', 1)
@@ -31,23 +30,17 @@ jobs:
           s = s.replace('ט׳ – מתמטיקה מצומצמת', 'ט׳ – מצומצמת')
           s = s.replace('<p class="page-sub">המועדים מסודרים לפי סדר כרונולוגי</p>', '')
           s = s.replace('עדכונים, קישורים ומידע חשוב לשבוע הקרוב', '')
-
-          old_community = '''    <div class="row"><span class="orb" aria-hidden="true"></span><div class="box community-box"><h3 class="community-title">קהילות מתמטיקה</h3><p class="community-item"><strong>מפגש ראשון – השתלמות קהילת מורים:</strong> רביעי, <strong>07.10.2026</strong>, בשעה <strong>19:00–21:30</strong>.</p><p class="community-item"><strong>מפגש ראשון – השתלמות קהילת רכזים:</strong> ראשון, <strong>25.10.2026</strong>, בשעה <strong>19:00–21:30</strong>. <span class="red-focus">מספר המקומות מוגבל</span>. <a class="link" href="https://docs.google.com/forms/d/1bnZ2j8x9UpR4l-2R5dr6-z0eg0Ai6EO1qpPkGnFm8fk/preview" target="_blank" rel="noopener noreferrer">להרשמה</a>.</p></div></div>'''
-          new_community_and_assessment = '''    <div class="row"><span class="orb" aria-hidden="true"></span><p class="text box"><strong>07.10.2026 — מפגש ראשון בהשתלמות קהילת מורים:</strong> יום רביעי, בשעה <strong>19:00–21:30</strong>.</p></div>
+          old = '''    <div class="row"><span class="orb" aria-hidden="true"></span><div class="box community-box"><h3 class="community-title">קהילות מתמטיקה</h3><p class="community-item"><strong>מפגש ראשון – השתלמות קהילת מורים:</strong> רביעי, <strong>07.10.2026</strong>, בשעה <strong>19:00–21:30</strong>.</p><p class="community-item"><strong>מפגש ראשון – השתלמות קהילת רכזים:</strong> ראשון, <strong>25.10.2026</strong>, בשעה <strong>19:00–21:30</strong>. <span class="red-focus">מספר המקומות מוגבל</span>. <a class="link" href="https://docs.google.com/forms/d/1bnZ2j8x9UpR4l-2R5dr6-z0eg0Ai6EO1qpPkGnFm8fk/preview" target="_blank" rel="noopener noreferrer">להרשמה</a>.</p></div></div>'''
+          new = '''    <div class="row"><span class="orb" aria-hidden="true"></span><p class="text box"><strong>07.10.2026 — מפגש ראשון בהשתלמות קהילת מורים:</strong> יום רביעי, בשעה <strong>19:00–21:30</strong>.</p></div>
     <div class="row"><span class="orb" aria-hidden="true"></span><p class="text box"><strong>25.10.2026 — מפגש ראשון בהשתלמות קהילת רכזים:</strong> יום ראשון, בשעה <strong>19:00–21:30</strong>. <span class="red-focus">מספר המקומות מוגבל</span>. <a class="link" href="https://docs.google.com/forms/d/1bnZ2j8x9UpR4l-2R5dr6-z0eg0Ai6EO1qpPkGnFm8fk/preview" target="_blank" rel="noopener noreferrer">להרשמה</a>.</p></div>
     <div class="row assessment-row"><span class="orb" aria-hidden="true"></span><div class="box assessment-summary"><p class="moodle-part"><strong>משימות הערכה ב־Moodle:</strong></p><p class="moodle-part"><strong>25.10.2026 — שכבת ח׳:</strong> מתחילים להגיש את משימת ההערכה הראשונה ב־Moodle. מועד ההגשה: <strong>25.10.26–6.11.26</strong>. הנושאים: יחס, פרופורציה, קנה מידה, אחוזים, זוויות מתחלפות ומתאימות בין ישרים מקבילים, משפט פיתגורס, היקף מעגל, שטח עיגול ומשוואות לינאריות. <strong>50% שאלות קצרות / 50% שאלה אוריינית.</strong></p><p class="moodle-part"><strong>01.11.2026 — שכבת ז׳:</strong> מתחילים להגיש את משימת ההערכה הראשונה ב־Moodle. מועד ההגשה: <strong>1.11.26–13.11.26</strong>. הנושאים: מערכת צירים ברביע ראשון; זוויות; מספרים מכוונים. <strong>50% שאלות קצרות / 50% שאלה אוריינית.</strong></p></div></div>'''
-          if old_community in s:
-              s = s.replace(old_community, new_community_and_assessment, 1)
-          else:
+          if old not in s:
               raise SystemExit('community block not found')
-
-          # Remove the dedicated Moodle assessment page; its content now lives in the regular summary.
+          s = s.replace(old, new, 1)
           s, n = re.subn(r'<section class="sheet page" aria-label="משימות הערכה ב־Moodle">.*?</section>\n', '', s, count=1, flags=re.S)
           if n != 1:
               raise SystemExit('assessment section removal failed')
-
-          # Layout overrides: connected A4 sheets, distinct backgrounds, full-height use, and exact orb alignment.
-          overrides = r'''
+          overrides = '''
 /* Summary 5 follow-up: connected A4 flow + page-specific backgrounds */
 .sheet+.sheet{margin-top:0!important;border-top:0!important}
 .upcoming-page{display:flex;flex-direction:column;background:linear-gradient(180deg,#fffdf7 0%,#f7fcff 100%)}
@@ -56,26 +49,12 @@ jobs:
 .teaching-page{display:flex;flex-direction:column;background:linear-gradient(180deg,#f6f7ff 0%,#eef8ff 100%)}
 .workbook-page{background:linear-gradient(180deg,#f2fff9 0%,#f7fbff 100%)}
 .assessment-summary{display:flex;flex-direction:column;gap:12px}
-/* The rotating orb sits on the same first text line, never above it. */
 .row>.orb{margin-top:.42em!important}
 .row:has(>.box)>.orb{margin-top:calc(18px + .42em)!important}
-@media(min-width:760px){
-  .document{padding:0!important}
-  .document>.sheet{margin:0 auto!important;border:0!important;border-radius:0!important;box-shadow:none!important}
-  .upcoming-page .stack{justify-content:space-between}
-  .teaching-page .table-wrap{flex:1;display:flex}
-  .teaching-page .teach-table{height:100%;align-self:stretch}
-  .teaching-page .teach-table tbody tr{height:25%}
-  .teaching-page .teach-table td{vertical-align:middle}
-}
-@media(max-width:420px){
-  .row>.orb{margin-top:.40em!important}
-  .row:has(>.box)>.orb{margin-top:calc(17px + .40em)!important}
-}
+@media(min-width:760px){.document{padding:0!important}.document>.sheet{margin:0 auto!important;border:0!important;border-radius:0!important;box-shadow:none!important}.upcoming-page .stack{justify-content:space-between}.teaching-page .table-wrap{flex:1;display:flex}.teaching-page .teach-table{height:100%;align-self:stretch}.teaching-page .teach-table tbody tr{height:25%}.teaching-page .teach-table td{vertical-align:middle}}
+@media(max-width:420px){.row>.orb{margin-top:.40em!important}.row:has(>.box)>.orb{margin-top:calc(17px + .40em)!important}}
 '''
-          if 'Summary 5 follow-up: connected A4 flow' not in s:
-              s = s.replace('</style>', overrides + '\n</style>', 1)
-
+          s = s.replace('</style>', overrides + '\n</style>', 1)
           p.write_text(s, encoding='utf-8')
           PY
       - name: Commit changes
