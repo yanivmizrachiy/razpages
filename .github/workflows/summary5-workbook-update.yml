@@ -1,0 +1,45 @@
+name: Update Summary 5 workbooks
+
+on:
+  push:
+    branches: ["summary5-update-20260917"]
+    paths:
+      - ".github/workflows/summary5-workbook-update.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: summary5-update-20260917
+      - name: Add workbook section
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const p = 'summary-5.html';
+          let s = fs.readFileSync(p, 'utf8');
+          const href = 'https://yanivmizrachiy.github.io/graph-reading-preview/?page=1&release=graph-reading-20260904-cover-first';
+          if (s.includes('חוברות העבודה שלנו:') && s.includes(href)) {
+            console.log('Workbook section already present');
+            process.exit(0);
+          }
+          const marker = '<div class="content-row"><span class="orb" aria-hidden="true"></span><div class="content-text training-box">';
+          if (!s.includes(marker)) throw new Error('Training section marker not found');
+          const block = '<div class="content-row"><span class="orb" aria-hidden="true"></span><p class="content-text"><span class="survey-label">חוברות העבודה שלנו:</span><br><a class="survey-link" href="' + href + '" target="_blank" rel="noopener noreferrer">חוברת עבודה בנושא קריאת גרפים</a>.</p></div>\n    ';
+          s = s.replace(marker, block + marker);
+          fs.writeFileSync(p, s, 'utf8');
+          NODE
+      - name: Commit update
+        shell: bash
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "Summary 5 updater"
+          git config user.email "actions@users.noreply.github.com"
+          git add summary-5.html
+          git commit -m "Add graph reading workbook to Summary 5"
+          git push origin HEAD:summary5-update-20260917
