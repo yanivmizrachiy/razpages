@@ -23,7 +23,7 @@ body{background:transparent}.sheet{scroll-snap-align:start;isolation:isolate;bor
 .page::before{content:"";position:absolute;z-index:-1;inset:-18%;pointer-events:none;background:conic-gradient(from 190deg at 50% 50%,transparent 0 22%,rgba(32,201,195,.055) 30%,transparent 38% 62%,rgba(49,93,154,.045) 71%,transparent 79%);filter:blur(24px);animation:ambientShift 16s ease-in-out infinite alternate}
 @keyframes ambientShift{from{transform:translate3d(-1.5%,0,0) rotate(-2deg)}to{transform:translate3d(1.5%,1%,0) rotate(2deg)}}
 .page-head{padding:14px 16px;border:1px solid rgba(255,255,255,.72);border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.74),rgba(244,251,253,.56));box-shadow:0 12px 28px rgba(23,79,134,.055)}
-.hello-block{display:grid;grid-template-columns:1fr;gap:8px;padding:2px 0 4px}.hello-block .hello{margin:0}.hello-rule{display:block;width:min(170px,38%);height:4px;border-radius:999px;background:linear-gradient(90deg,var(--turq),rgba(23,79,134,.78),transparent);box-shadow:0 4px 14px rgba(32,201,195,.18)}
+.upcoming-head{flex-direction:row-reverse}.author{flex-direction:row-reverse}.hello-block{display:grid;grid-template-columns:1fr;gap:8px;padding:2px 0 4px;text-align:right}.hello-block .hello{text-align:right}.hello-block .hello{margin:0}.hello-rule{display:block;width:min(170px,38%);height:4px;border-radius:999px;background:linear-gradient(90deg,var(--turq),rgba(23,79,134,.78),transparent);box-shadow:0 4px 14px rgba(32,201,195,.18)}
 .box,.card,.workbook-card,.table-wrap{backdrop-filter:saturate(1.08) blur(10px);-webkit-backdrop-filter:saturate(1.08) blur(10px)}
 .link,.btn{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease,filter .22s ease}.card,.box,.workbook-card,.table-wrap{transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease}.events-table tbody tr,.teach-table tbody tr{transition:filter .2s ease,transform .2s ease}
 .link:focus-visible,.btn:focus-visible{outline:3px solid rgba(32,201,195,.38);outline-offset:4px;border-radius:8px}
@@ -48,7 +48,7 @@ body{background:transparent}.sheet{scroll-snap-align:start;isolation:isolate;bor
 </section>
 
 <section class="sheet page" aria-label="מה צפוי">
-  <div class="page-head">
+  <div class="page-head upcoming-head">
     <div><h2 class="page-title">מה צפוי?</h2><p class="page-sub">עדכונים, קישורים ומידע חשוב לשבוע הקרוב</p></div>
     <div class="author"><div class="author-txt"><strong>יניב רז</strong><span>מדריך מחוזי חט״ב בעיר ירושלים</span></div><img src="https://jerusalem-weekly-sep10.vercel.app/assets/yaniv.jpg" alt="יניב רז"></div>
   </div>
@@ -60,8 +60,8 @@ body{background:transparent}.sheet{scroll-snap-align:start;isolation:isolate;bor
   </div>
 </section>
 
-<section class="sheet page" aria-label="לוח אירועים">
-  <div class="page-head"><div><h2 class="page-title">לוח אירועים</h2><p class="page-sub">המועדים מסודרים לפי סדר כרונולוגי</p></div><span class="orb-big" aria-hidden="true"></span></div>
+<section class="sheet page" aria-label="מצפן">
+  <div class="page-head"><div><h2 class="page-title">מצפן</h2><p class="page-sub">המועדים מסודרים לפי סדר כרונולוגי</p></div><span class="orb-big" aria-hidden="true"></span></div>
   <div class="table-wrap">
     <table class="events-table">
       <thead><tr><th>תאריך</th><th>יום</th><th>אירוע</th></tr></thead>
