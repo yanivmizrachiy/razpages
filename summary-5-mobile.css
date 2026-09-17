@@ -1,0 +1,54 @@
+/* Mobile-first reading redesign — Summary 5 */
+.modern-datebar{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"greg heb";align-items:center;gap:14px;width:100%;padding:12px 14px;border:1px solid rgba(23,79,134,.12);border-radius:18px;background:rgba(255,255,255,.78);box-shadow:0 10px 28px rgba(23,79,134,.07)}
+.date-gregorian{grid-area:greg;text-align:left;color:#4d6b84;font:800 1rem/1.2 Assistant,'Noto Sans Hebrew',Arial,sans-serif}
+.date-hebrew{grid-area:heb;text-align:right;color:var(--blue2)}
+.date-hebrew span,.date-hebrew strong{display:block}.date-hebrew span{font:700 .94rem/1.2 'Noto Sans Hebrew',Arial,sans-serif}.date-hebrew strong{margin-top:2px;font:900 1.17rem/1.25 Assistant,'Noto Sans Hebrew',Arial,sans-serif}
+.text{font-size:1.06rem;line-height:1.72}.page-sub{font-size:1.04rem}.card p{font-size:.98rem}.teach-table td,.events-table td{font-size:.96rem}.workbook-card p{font-size:1.04rem}
+@media(max-width:700px){
+html{scroll-snap-type:none;font-size:17px;background:#f3f7fa}
+body{background:#f3f7fa;overflow-x:hidden}
+.document{display:block;width:100%;padding:0 0 28px}
+.sheet{width:100%;max-width:none;min-height:0;aspect-ratio:auto;overflow:visible;border:0;border-radius:0;box-shadow:none;scroll-snap-align:none}
+.cover{min-height:100svh;padding:16px 16px 28px;display:flex;flex-direction:column;gap:22px;justify-content:flex-start;background:radial-gradient(circle at 10% 8%,rgba(32,201,195,.17),transparent 34%),radial-gradient(circle at 92% 90%,rgba(23,79,134,.12),transparent 35%),linear-gradient(160deg,#ffffff 0%,#f5fbfd 55%,#eef5ff 100%)}
+.modern-datebar{order:0;padding:12px 13px;border-radius:16px;gap:10px;background:rgba(255,255,255,.9)}
+.date-gregorian{font-size:.98rem}.date-hebrew span{font-size:.9rem}.date-hebrew strong{font-size:1.08rem}
+.cover-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:17px;flex:1;padding:20px 4px;text-align:center}
+.cover-logo{width:112px;height:112px;box-shadow:0 0 0 7px rgba(49,93,130,.05),0 16px 36px rgba(33,73,108,.14)}
+.cover h1{font-size:2.55rem;line-height:1.05;letter-spacing:-.02em}
+.edition{margin-top:9px;font-size:1.08rem}
+.district{max-width:340px;font-size:1.08rem;line-height:1.62}.district-lead{white-space:normal;margin-top:7px}
+.page{padding:18px 15px 28px;background:linear-gradient(180deg,#fbfdff 0%,#f4f9fc 100%)}
+.page::before{display:none}
+.page-head{margin:0 0 20px;padding:15px 14px;border-radius:18px;gap:12px;align-items:center;background:#fff;box-shadow:0 8px 24px rgba(23,79,134,.07)}
+.page-title{font-size:2rem;line-height:1.08}.page-sub{margin-top:6px;font-size:.96rem;line-height:1.5}
+.orb-big{width:30px;height:30px;box-shadow:0 0 0 6px rgba(32,201,195,.10),0 7px 16px rgba(15,128,123,.13)}
+.upcoming-head{display:grid;grid-template-columns:1fr;gap:13px;align-items:start}
+.upcoming-head>div:first-child{grid-row:2}
+.upcoming-head .author{grid-row:1;justify-self:end;margin:0;display:flex;flex-direction:row;align-items:center;text-align:right}
+.author img{width:68px;height:68px}.author-txt strong{font-size:1rem}.author-txt span{max-width:220px;font-size:.78rem;line-height:1.4}
+.stack{gap:18px}.hello-block{padding:2px 1px 8px;text-align:right}.hello-block .hello{font-size:1.55rem;line-height:1.25;text-align:right}.hello-rule{width:126px;height:4px}
+.row{grid-template-columns:22px minmax(0,1fr);gap:11px;align-items:start}
+.orb{width:18px;height:18px;margin-top:7px;box-shadow:0 0 0 4px rgba(32,201,195,.10)}
+.text{font-size:1.07rem;line-height:1.78;color:#1f425b}.box{padding:16px 14px;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(23,79,134,.055)}
+.link{display:inline;font-size:1.02em;text-decoration-thickness:2px;text-underline-offset:4px}
+.red-focus{white-space:normal;padding:0 .1em}.red-focus::after{left:-.25em;right:-.25em;top:-.22em;bottom:-.18em}
+.table-wrap{overflow:visible;border:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.events-table,.events-table tbody,.events-table tr,.events-table td,.teach-table,.teach-table tbody,.teach-table tr,.teach-table td{display:block;width:100%}
+.events-table thead,.teach-table thead{display:none}
+.events-table tr,.teach-table tr{margin:0 0 14px;padding:14px;border:1px solid rgba(23,79,134,.11);border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(23,79,134,.055)}
+.events-table td,.teach-table td{padding:8px 0!important;border:0!important;background:transparent!important;text-align:right!important;font-size:1.02rem!important;line-height:1.62!important}
+.events-table td:nth-child(1)::before{content:'תאריך';display:block;color:#607991;font-size:.78rem;font-weight:800}
+.events-table td:nth-child(2)::before{content:'יום';display:block;color:#607991;font-size:.78rem;font-weight:800}
+.events-table td:nth-child(3)::before{content:'אירוע';display:block;color:#607991;font-size:.78rem;font-weight:800}
+.events-table td:nth-child(3){font-size:1.12rem!important;font-weight:850!important;color:var(--blue2)!important}
+.teach-table td:first-child{padding-bottom:11px!important;margin-bottom:7px;border-bottom:1px solid rgba(23,79,134,.10)!important;font-size:1.25rem!important;font-weight:900!important;color:var(--blue2)!important}
+.teach-table td.sep,.teach-table td.oct{margin-top:8px;padding:12px!important;border-radius:13px!important}
+.teach-table td.sep{background:#e9f8f7!important}.teach-table td.oct{background:#edf3ff!important}
+.teach-table td.sep::before,.teach-table td.oct::before{display:block;margin-bottom:5px;font-size:.82rem;font-weight:900;letter-spacing:.01em}
+.teach-table td.sep::before{content:'ספטמבר';color:#0f716c}.teach-table td.oct::before{content:'אוקטובר';color:#315d9a}
+.teach-note{margin:12px 2px 0;font-size:.94rem;line-height:1.6}
+.cards{grid-template-columns:1fr;gap:14px}.card{padding:17px 15px;border-radius:18px;background:#fff}.card h3{font-size:1.42rem}.date-chip{font-size:.86rem}.card p{font-size:1.02rem;line-height:1.72}.assessment{margin-top:12px!important;padding-top:12px!important}
+.workbook-card{margin-top:0;padding:19px 16px;border-radius:19px}.workbook-card h3{font-size:1.5rem;line-height:1.25}.workbook-card p{font-size:1.03rem;line-height:1.65}.btn{display:block;width:100%;padding:13px 15px;text-align:center;font-size:1rem;border-radius:14px}
+.footer-note{margin-top:20px;font-size:.88rem;line-height:1.5}
+}
+@media(max-width:380px){html{font-size:16px}.page{padding-inline:12px}.modern-datebar{padding-inline:10px}.date-hebrew strong{font-size:1rem}.date-gregorian{font-size:.92rem}.cover h1{font-size:2.25rem}.text{font-size:1.03rem}}
