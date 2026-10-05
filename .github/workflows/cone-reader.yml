@@ -1,0 +1,44 @@
+name: Cone A4 reader
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'workbooks/cone/**'
+      - 'workbooks/visual-assets/**'
+      - 'tests/contracts/cone-reader.test.mjs'
+      - 'scripts/validate-cone-reader.mjs'
+      - '.github/workflows/cone-reader.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'workbooks/cone/**'
+      - 'workbooks/visual-assets/**'
+      - 'tests/contracts/cone-reader.test.mjs'
+      - 'scripts/validate-cone-reader.mjs'
+      - '.github/workflows/cone-reader.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  cone-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - name: Check navigation contracts
+        run: node --test tests/contracts/cone-reader.test.mjs
+      - name: Check all A4 pages on desktop, Android and iPhone
+        run: node scripts/validate-cone-reader.mjs
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cone-reader-browser-evidence
+          path: meta/audit/cone-reader
+          if-no-files-found: warn
+          retention-days: 3
