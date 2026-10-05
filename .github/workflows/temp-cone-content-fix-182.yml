@@ -1,0 +1,76 @@
+name: Temporary guarded cone content fix 182
+
+on:
+  issues:
+    types: [edited]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-cone:
+    if: github.event.issue.number == 182
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dedicated fix branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/cone-content-audit-20261005
+          fetch-depth: 0
+
+      - name: Apply three exact guarded replacements
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path("workbooks/cone/index.html")
+          text = path.read_text(encoding="utf-8")
+
+          start_marker = "<!-- SOURCE-LOCK:START -->"
+          end_marker = "<!-- SOURCE-LOCK:END -->"
+
+          def locked_block(value: str) -> str:
+              start = value.index(start_marker)
+              end = value.index(end_marker, start) + len(end_marker)
+              return value[start:end]
+
+          locked_before = locked_block(text)
+
+          replacements = [
+              ("נפח / שטח", "נפח"),
+              ("היוצר / הקוטר", "קטע מן הקודקוד אל נקודה על שפת הבסיס"),
+              (
+                  "כדי שהגלידה לא תנזל, חשוב שהכדור הראשון ייכנס לפחות בחציו לתוך חלל החרוט. לכן, המידות המדויקות של הגביע הן קריטיות.",
+                  "לבדיקת התאמה של כדור גלידה לגביע נדרשים גם נתונים על מידות כדור הגלידה."
+              ),
+          ]
+
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"Refusing unsafe replacement: expected exactly 1 occurrence, got {count}: {old!r}")
+              text = text.replace(old, new, 1)
+
+          if locked_block(text) != locked_before:
+              raise SystemExit("SOURCE-LOCK changed; refusing to write")
+
+          page_numbers = [int(x) for x in re.findall(r'data-local-page="(\d+)"', text)]
+          if page_numbers != list(range(1, 47)):
+              raise SystemExit(f"Expected exactly pages 1..46 in order, got: {page_numbers}")
+
+          path.write_text(text, encoding="utf-8")
+
+      - name: Validate diff hygiene
+        run: |
+          git diff --check
+          test "$(git diff --name-only | wc -l)" -eq 1
+          test "$(git diff --name-only)" = "workbooks/cone/index.html"
+
+      - name: Commit and push only to dedicated branch
+        run: |
+          git config user.name "razpages guarded maintenance"
+          git config user.email "actions@users.noreply.github.com"
+          git add workbooks/cone/index.html
+          git commit -m "fix(cone): correct terminology and unsupported wording"
+          git push origin HEAD:fix/cone-content-audit-20261005
