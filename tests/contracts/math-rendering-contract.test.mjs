@@ -20,9 +20,7 @@ function runValidatorFixture({ activeHtml, archivedHtml }) {
     const workbookRoot = path.join(tempRoot, 'workbooks', 'circle');
     fs.mkdirSync(workbookRoot, { recursive: true });
 
-    if (activeHtml) {
-      fs.writeFileSync(path.join(workbookRoot, 'page-1.html'), activeHtml);
-    }
+    if (activeHtml) fs.writeFileSync(path.join(workbookRoot, 'page-1.html'), activeHtml);
 
     if (archivedHtml) {
       const archiveRoot = path.join(workbookRoot, 'source', 'original');
@@ -39,12 +37,12 @@ function runValidatorFixture({ activeHtml, archivedHtml }) {
   }
 }
 
-test('math rendering policy stays global and canonical', () => {
+test('math rendering policy stays global while Pythagoras ownership stays external', () => {
   const rules = read('CLAUDE.md');
   const pkg = JSON.parse(read('package.json'));
   const globalValidator = read('scripts/validate-math-rendering.mjs');
-  const pythagorasValidator = read('scripts/validate-pythagoras-workbook.mjs');
-  const pythagorasCss = read('styles/topics/pythagoras-power-practice.css');
+  const pythagorasPointer = read('scripts/validate-pythagoras-canonical-pointer.mjs');
+  const legacyRedirect = read('pythagoras-workbook.html');
 
   assert.match(rules, /אחידות גופן מתמטי — כלל גורף/u);
   assert.match(rules, /תרשים מתמטי חדש נבנה כ־SVG\/HTML וקטורי/u);
@@ -53,7 +51,8 @@ test('math rendering policy stays global and canonical', () => {
 
   assert.equal(pkg.scripts['validate:math-rendering'], 'node scripts/validate-math-rendering.mjs');
   assert.match(pkg.scripts['ci:all'], /validate:math-rendering/u);
-  assert.match(pkg.scripts['pythagoras:check'], /validate:math-rendering/u);
+  assert.equal(pkg.scripts['pythagoras:check'], 'node scripts/validate-pythagoras-canonical-pointer.mjs');
+  assert.equal(pkg.scripts['validate:pythagoras'], 'node scripts/validate-pythagoras-canonical-pointer.mjs');
 
   assert.match(globalValidator, /collectCanonicalPages/u);
   assert.match(globalValidator, /path\.join\(root, 'workbooks'\)/u);
@@ -64,12 +63,10 @@ test('math rendering policy stays global and canonical', () => {
   assert.match(globalValidator, /<\(\?:object\|embed\)/u);
   assert.doesNotMatch(globalValidator, /<img\\b/u);
 
-  assert.doesNotMatch(pythagorasValidator, /validateMathAndDrawingStack/u);
-  assert.doesNotMatch(pythagorasValidator, /אסורה תמונת raster/u);
-  assert.match(pythagorasValidator, /validate-math-rendering\.mjs/u);
-
-  assert.doesNotMatch(pythagorasCss, /\.root-symbol\b/u);
-  assert.doesNotMatch(pythagorasCss, /\.root-radicand\b/u);
+  assert.match(pythagorasPointer, /https:\/\/yanivmizrachiy\.github\.io\/pythagoras\//u);
+  assert.match(pythagorasPointer, /Retired duplicate Pythagoras runtime still exists/u);
+  assert.match(legacyRedirect, /https:\/\/yanivmizrachiy\.github\.io\/pythagoras\//u);
+  assert.doesNotMatch(legacyRedirect, /MathJax/u);
 });
 
 test('active workbooks are enforced while source archives stay excluded', () => {
