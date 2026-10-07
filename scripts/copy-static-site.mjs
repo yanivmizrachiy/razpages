@@ -63,10 +63,6 @@ if (copyDirIfExists(`${coordinateWorkbookRoot}/preview`, `${coordinateWorkbookTa
   log(`copied ${coordinateWorkbookRoot}/preview/`);
 }
 
-if (!fs.existsSync(path.join(dist, 'assets/pythagoras/vector'))) {
-  throw new Error('Missing required Pythagoras assets: assets/pythagoras/vector');
-}
-
 const rootFiles = fs.readdirSync(root);
 for (const file of rootFiles) {
   if (/^עמוד-\d+\.html$/.test(file)) copyFileIfExists(file);
@@ -89,19 +85,13 @@ const required = [
   'mobile-app.webmanifest',
   'systems-workbook.html',
   'pythagoras-workbook.html',
-  'pythagoras-workbook.js',
-  'pythagoras-workbook-model.js',
   'sw.js',
   'reader-actions.js',
   'reader-actions.css',
   'meta/topics.json',
   'meta/two-variable-systems-manifest.json',
   'styles/a4-base.css',
-  'styles/pythagoras-workbook.css',
-  'styles/topics/pythagoras.css',
   'preview/index.html',
-  'assets/pythagoras/vector/page-05.svg',
-  'assets/pythagoras/vector/page-22.svg',
   'coordinate-first-quadrant.html',
   'projects/coordinate-first-quadrant-workbook/index.html',
   'projects/coordinate-first-quadrant-workbook/workbook.css',
@@ -121,7 +111,7 @@ const versionInputs = [
   'catalog.html', 'catalog.css', 'catalog.js', 'catalog-deep-link.js',
   'mobile-app.html', 'mobile-app.css', 'mobile-app.js', 'mobile-deep-link.js', 'mobile-app.webmanifest',
   'systems-workbook.html',
-  'pythagoras-workbook.html', 'pythagoras-workbook.js', 'pythagoras-workbook-model.js', 'styles/pythagoras-workbook.css', 'styles/topics/pythagoras.css',
+  'pythagoras-workbook.html',
   'sw.js', 'reader-actions.css', 'reader-actions.js',
   'meta/topics.json', 'meta/two-variable-systems-manifest.json'
 ];
@@ -131,7 +121,7 @@ for (const rel of versionInputs) {
   hash.update(fs.readFileSync(path.join(root, rel)));
 }
 const buildVersion = String(process.env.GITHUB_SHA || '').slice(0, 12) || hash.digest('hex').slice(0, 12);
-const tokenFiles = ['index.html', 'index.js', 'catalog.html', 'mobile-app.html', 'mobile-app.js', 'mobile-app.webmanifest', 'systems-workbook.html', 'pythagoras-workbook.html', 'sw.js'];
+const tokenFiles = ['index.html', 'index.js', 'catalog.html', 'mobile-app.html', 'mobile-app.js', 'mobile-app.webmanifest', 'systems-workbook.html', 'sw.js'];
 for (const rel of tokenFiles) {
   const file = path.join(dist, rel);
   const source = fs.readFileSync(file, 'utf8');
@@ -140,8 +130,6 @@ for (const rel of tokenFiles) {
   fs.writeFileSync(file, output, 'utf8');
 }
 
-// חיבור כל נכסי ה-HTML של dist לגרסת ה-build: מוסיף ?v=<buildVersion> לסקריפט MathJax
-// ולכל קישורי ה-CSS, כדי ש-deploy חדש תמיד יטען מנוע וסגנון טריים ולא cache ישן שובר.
 function walkHtml(dir) {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
