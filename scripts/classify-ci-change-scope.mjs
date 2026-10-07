@@ -3,7 +3,6 @@
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { buildPythagorasWorkbook } from '../pythagoras-workbook-model.js';
 
 export const MOBILE_RELEVANT_PATTERNS = [
   /^(?:mobile-app|catalog)\.(?:html|css|js)$/,
@@ -22,11 +21,6 @@ export const MOBILE_RELEVANT_PATTERNS = [
   /^package(?:-lock)?\.json$/,
 ];
 
-/*
- * Deep mobile validation scans the whole site and is intentionally narrower.
- * Local page/topic edits still get the fast browser + interaction gates, while
- * app/runtime/global-layout changes get the expensive all-pages shards too.
- */
 export const MOBILE_DEEP_RELEVANT_PATTERNS = [
   /^(?:mobile-app|catalog)\.(?:html|css|js)$/,
   /^(?:mobile-deep-link|catalog-deep-link)\.js$/,
@@ -40,28 +34,10 @@ export const MOBILE_DEEP_RELEVANT_PATTERNS = [
   /^package(?:-lock)?\.json$/,
 ];
 
-export const PYTHAGORAS_SHARED_PATTERNS = [
-  /^pythagoras-workbook(?:-model)?\.(?:html|js)$/,
-  /^styles\/pythagoras-workbook\.css$/,
-  /^styles\/topics\/pythagoras(?:-[^/]+)?\.css$/,
-  /^meta\/topics\.json$/,
-  /^scripts\/(?:validate-pythagoras-workbook(?:-browser)?|pythagoras-[^/]+)\.mjs$/,
-  /^tests\/contracts\/pythagoras-[^/]+\.test\.mjs$/,
-  /^CLAUDE\.md$/,
-  /^\.github\/workflows\/pythagoras-quality\.yml$/,
-];
-
-/*
- * These files can change repository maintenance/CI behavior but cannot alter the
- * generated site itself. They get a lean validation path: repository health,
- * CI-scope contract and production build. Runtime/content files never match.
- * Generated coordinate-workbook dist files are explicitly included because the
- * dedicated build workflow recreates them and excludes dist/** from source triggers.
- */
 export const MAINTENANCE_ONLY_PATTERNS = [
   /^\.gitignore$/,
   /^\.vscode\/(?:settings|launch|tasks)\.json$/,
-  /^scripts\/(?:repo-health-report|edit-map|classify-ci-change-scope)\.mjs$/,
+  /^scripts\/(?:repo-health-report|edit-map|classify-ci-change-scope|validate-pythagoras-canonical-pointer)\.mjs$/,
   /^\.github\/workflows\/deploy-pages\.yml$/,
   /^tests\/contracts\/(?:deploy-ci-scope|fast-pr-ci)\.test\.mjs$/,
   /^projects\/coordinate-first-quadrant-workbook\/dist\//,
@@ -79,48 +55,40 @@ export function isMaintenanceOnlyPath(file) {
   return MAINTENANCE_ONLY_PATTERNS.some((pattern) => pattern.test(file));
 }
 
-export function buildCanonicalPythagorasPaths(meta) {
-  const workbook = buildPythagorasWorkbook(meta);
-  const paths = new Set();
-  for (const page of workbook.pages) {
-    const file = page.file || `עמוד-${page.sourceNumber}.html`;
-    paths.add(file);
-    paths.add(`styles/pages/עמוד-${page.sourceNumber}.css`);
-  }
-  return paths;
+// Compatibility exports: Pythagoras is no longer owned or validated in this repository.
+export function buildCanonicalPythagorasPaths() {
+  return new Set();
 }
 
-export function isPythagorasRelevantPath(file, canonicalPaths = new Set()) {
-  return canonicalPaths.has(file) || PYTHAGORAS_SHARED_PATTERNS.some((pattern) => pattern.test(file));
+export function isPythagorasRelevantPath() {
+  return false;
 }
 
-export function classifyChangeScope({ eventName, changedFiles, pythagorasPaths = new Set() }) {
+export function classifyChangeScope({ eventName, changedFiles }) {
   const mobileMatched = changedFiles.filter(isMobileRelevantPath);
   const mobileDeepMatched = changedFiles.filter(isMobileDeepRelevantPath);
-  const pythagorasMatched = changedFiles.filter((file) => isPythagorasRelevantPath(file, pythagorasPaths));
 
   if (eventName === 'workflow_dispatch') {
     return {
       mobile: true,
       mobileDeep: true,
-      pythagoras: true,
+      pythagoras: false,
       maintenanceOnly: false,
       reason: 'manual release requires full validation',
       mobileDeepReason: 'manual release requires full validation',
-      pythagorasReason: 'manual release requires full validation',
+      pythagorasReason: 'Pythagoras is validated only in yanivmizrachiy/pythagoras',
       maintenanceReason: 'manual release never uses the maintenance-only shortcut',
     };
   }
 
   const mobile = mobileMatched.length > 0;
   const mobileDeep = mobileDeepMatched.length > 0;
-  const pythagoras = pythagorasMatched.length > 0;
   const maintenanceOnly = changedFiles.length > 0 && changedFiles.every(isMaintenanceOnlyPath);
 
   return {
     mobile,
     mobileDeep,
-    pythagoras,
+    pythagoras: false,
     maintenanceOnly,
     reason: mobile
       ? `mobile-relevant files changed: ${mobileMatched.join(', ')}`
@@ -128,9 +96,7 @@ export function classifyChangeScope({ eventName, changedFiles, pythagorasPaths =
     mobileDeepReason: mobileDeep
       ? `global mobile/runtime files changed: ${mobileDeepMatched.join(', ')}`
       : 'no app-runtime or global-layout files changed; deep all-pages audit is unnecessary',
-    pythagorasReason: pythagoras
-      ? `Pythagoras-relevant files changed: ${pythagorasMatched.join(', ')}`
-      : 'no canonical Pythagoras files changed',
+    pythagorasReason: 'Pythagoras is validated only in yanivmizrachiy/pythagoras',
     maintenanceReason: maintenanceOnly
       ? `repository-only maintenance files changed: ${changedFiles.join(', ')}`
       : 'change includes runtime/content or an unclassified file; use the full static validation path',
@@ -139,37 +105,20 @@ export function classifyChangeScope({ eventName, changedFiles, pythagorasPaths =
 
 function readChangedFiles(baseSha, headSha) {
   if (!baseSha || !headSha || /^0+$/u.test(baseSha)) return [];
-
-  const output = execFileSync(
-    'git',
-    ['diff', '--name-only', `${baseSha}...${headSha}`],
-    { encoding: 'utf8' },
-  );
-
-  return output
-    .split(/\r?\n/u)
-    .map((file) => file.trim())
-    .filter(Boolean);
+  const output = execFileSync('git', ['diff', '--name-only', `${baseSha}...${headSha}`], { encoding: 'utf8' });
+  return output.split(/\r?\n/u).map((file) => file.trim()).filter(Boolean);
 }
 
 function writeOutputs(outputPath, values) {
   const lines = Object.entries(values).map(([key, value]) => `${key}=${String(value).replace(/\r?\n/gu, ' ')}`);
-  if (outputPath) {
-    fs.appendFileSync(outputPath, `${lines.join('\n')}\n`, 'utf8');
-  } else {
-    console.log(lines.join('\n'));
-  }
+  if (outputPath) fs.appendFileSync(outputPath, `${lines.join('\n')}\n`, 'utf8');
+  else console.log(lines.join('\n'));
 }
 
 function main() {
   const eventName = process.env.GITHUB_EVENT_NAME || '';
-  const changedFiles = eventName === 'workflow_dispatch'
-    ? []
-    : readChangedFiles(process.env.BASE_SHA, process.env.HEAD_SHA);
-  const meta = JSON.parse(fs.readFileSync('meta/topics.json', 'utf8'));
-  const pythagorasPaths = buildCanonicalPythagorasPaths(meta);
-  const result = classifyChangeScope({ eventName, changedFiles, pythagorasPaths });
-
+  const changedFiles = eventName === 'workflow_dispatch' ? [] : readChangedFiles(process.env.BASE_SHA, process.env.HEAD_SHA);
+  const result = classifyChangeScope({ eventName, changedFiles });
   writeOutputs(process.env.GITHUB_OUTPUT, {
     mobile: result.mobile,
     mobile_deep: result.mobileDeep,
@@ -181,14 +130,7 @@ function main() {
     pythagoras_reason: result.pythagorasReason,
     maintenance_reason: result.maintenanceReason,
   });
-
-  console.log(`[ci-scope] mobile=${result.mobile} mobile-deep=${result.mobileDeep} pythagoras=${result.pythagoras} maintenance-only=${result.maintenanceOnly} changed=${changedFiles.length}`);
-  console.log(`[ci-scope] mobile-reason=${result.reason}`);
-  console.log(`[ci-scope] mobile-deep-reason=${result.mobileDeepReason}`);
-  console.log(`[ci-scope] pythagoras-reason=${result.pythagorasReason}`);
-  console.log(`[ci-scope] maintenance-reason=${result.maintenanceReason}`);
+  console.log(`[ci-scope] mobile=${result.mobile} mobile-deep=${result.mobileDeep} pythagoras=false maintenance-only=${result.maintenanceOnly} changed=${changedFiles.length}`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main();
-}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
