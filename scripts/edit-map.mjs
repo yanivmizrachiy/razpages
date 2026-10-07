@@ -3,6 +3,7 @@
 const pageArg = process.argv[2]?.trim();
 const page = /^\d+$/u.test(pageArg || '') ? pageArg : null;
 const LIVE_BASE = 'https://yanivmizrachiy.github.io/razpages';
+const PYTHAGORAS_CANONICAL = 'https://yanivmizrachiy.github.io/pythagoras/';
 
 const rows = [
   ['כללים מחייבים', 'CLAUDE.md'],
@@ -12,7 +13,7 @@ const rows = [
   ['פיתגורס — יסודות משותפים', 'styles/topics/pythagoras-foundations.css'],
   ['A4 גלובלי', 'styles/a4-base.css'],
   ['סדר/רישום נושאים ודפים', 'meta/topics.json'],
-  ['מודל החוברת המאוחדת', 'pythagoras-workbook-model.js'],
+  ['פיתגורס — מקור אמת קנוני', 'yanivmizrachiy/pythagoras'],
   ['רביע ראשון — מקור החוברת', 'projects/coordinate-first-quadrant-workbook/workbook/'],
   ['רביע ראשון — מחולל web', 'projects/coordinate-first-quadrant-workbook/src/build-web.mjs'],
   ['פריסה ל-GitHub Pages', '.github/workflows/deploy-pages.yml'],
@@ -28,12 +29,12 @@ for (const [label, file] of rows) {
 console.log('\nפקודות שימושיות');
 console.log('npm run edit:map -- 639        # איפה עורכים עמוד מסוים');
 console.log('npm run coordinate:web         # יוצר נכסי web של חוברת הרביע הראשון מתוך המקור');
-console.log('npm run pythagoras:check       # בדיקת פיתגורס מהירה בלי סריקות כבדות');
+console.log('npm run pythagoras:check       # בדיקת תאימות legacy בלבד; מקור האמת נמצא בריפו pythagoras');
 console.log('npm run ci:all                 # בדיקת ריפו מלאה כשבאמת צריך');
 
 console.log('\nקישורים חיים');
 if (page) {
   console.log(`דף ${page}: ${LIVE_BASE}/עמוד-${page}.html`);
 }
-console.log(`חוברת פיתגורס: ${LIVE_BASE}/pythagoras-workbook.html`);
+console.log(`חוברת פיתגורס — מקור אמת: ${PYTHAGORAS_CANONICAL}`);
 console.log(`רביע ראשון: ${LIVE_BASE}/projects/coordinate-first-quadrant-workbook/index.html`);
