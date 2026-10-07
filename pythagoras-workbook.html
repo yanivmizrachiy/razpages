@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>משפט פיתגורס — החוברת המלאה</title>
+  <script>
+    (() => {
+      const localHosts = new Set(['localhost', '127.0.0.1', '[::1]']);
+      if (localHosts.has(location.hostname)) return;
+      const target = new URL('https://yanivmizrachiy.github.io/pythagoras/');
+      const requestedPage = new URL(location.href).searchParams.get('page');
+      if (requestedPage && /^\d+$/.test(requestedPage)) target.hash = `page=${requestedPage}`;
+      location.replace(target.href);
+    })();
+  </script>
   <link rel="stylesheet" href="vendor/fonts/rubik.css" />
   <link rel="stylesheet" href="styles/a4-base.css" />
   <link rel="stylesheet" href="styles/topics/pythagoras.css" />
